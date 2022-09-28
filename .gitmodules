@@ -1,0 +1,6 @@
+[submodule "subprojects/argparse/argparse"]
+	path = subprojects/argparse/argparse
+	url = https://github.com/cofyc/argparse
+[submodule "subprojects/log.c/log.c"]
+	path = subprojects/log.c/log.c
+	url = https://github.com/rxi/log.c
