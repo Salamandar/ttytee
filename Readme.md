@@ -12,7 +12,6 @@ meson _build --buildtype release
 cd _build
 ninja
 DESTDIR=... ninja install
-
 ```
 
 
@@ -22,4 +21,9 @@ DESTDIR=... ninja install
 ttytee -t the_existing_tty new_pty1 new_pty2 etc
 ```
 
-##
+## Todo
+
+* Implement the goddamn base feature!
+* PTYs that receive both input and output ? (for targets that don't do remote echo)
+* Handle SIGUSR1 for on-demand pty creation (without software restart)
+* forward ioctls ? is it even possible ?
