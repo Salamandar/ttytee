@@ -8,19 +8,12 @@ project('ttytee',
     ]
 )
 
+add_project_arguments([
+    '-D_XOPEN_SOURCE=700',
+    '-D_GNU_SOURCE',
+], language: 'c')
 
 argparse = subproject('argparse').get_variable('argparse')
 log_c = subproject('log.c').get_variable('log_c')
 
-
-
-exe = executable('ttytee',
-    'ttytee.c',
-    dependencies: [
-        argparse,
-        log_c,
-    ],
-    install: true,
-)
-
-test('basic', exe)
+subdir('src')
