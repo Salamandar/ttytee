@@ -6,6 +6,8 @@
 #include <argparse.h>
 #include <log.h>
 
+#include "tee.h"
+
 #define PROJECT_NAME "ttytee"
 
 static const char *const usages[] = {
@@ -42,10 +44,9 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    printf("path: %s\n", arg_tty_path);
-    printf("Overwrite %s\n", arg_overwrite ? "enabled" : "disabled");
-    for (int i = 0; i < argc; i++) {
-        printf("pty %d: %s\n", i, *(argv + i));
+    atexit(clear_tee);
+    if (!run_tee(arg_tty_path, argv, argc, arg_overwrite)) {
+        log_error("Exiting.");
     }
 
     return 0;
