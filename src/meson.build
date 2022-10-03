@@ -1,5 +1,5 @@
 
-exe = executable('ttytee',
+ttytee = executable('ttytee',
     'ttytee.c',
     'tee.c',
     dependencies: [
@@ -9,4 +9,13 @@ exe = executable('ttytee',
     install: true,
 )
 
-test('basic', exe)
+fakepty = executable('fakepty',
+    'fakepty.c',
+    dependencies: [
+        argparse,
+        log_c,
+    ],
+    install: false,
+)
+
+test('basic', ttytee)
