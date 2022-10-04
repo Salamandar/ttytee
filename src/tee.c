@@ -10,6 +10,7 @@
 
 #include <log.h>
 
+#include "timespec_utils.h"
 #include "tee.h"
 
 #define BUFFER_SIZE 1024
@@ -138,8 +139,23 @@ bool run_tee(const char* tty, const char* _ptys[], size_t _ptys_count, bool over
         poll_fds[i].events = POLLIN;
     }
 
+    struct timespec last_poll, now;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &last_poll);
+
     while (true) {
         int poll_res = poll(poll_fds, ptys_count + 1, 1000);
+
+        // If the last loop + the poll took less than 1ms, we should sleep 10ms
+        clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+        struct timespec delay = { .tv_sec = 0, .tv_nsec = 10000000 };
+        timespec_add(&last_poll, &delay, &last_poll);
+        if (!timespec_compare(&now, &last_poll)) {
+            usleep(10000);
+            clock_gettime(CLOCK_MONOTONIC_RAW, &last_poll);
+            last_poll = now;
+            log_debug("sleep");
+        }
+
         if (poll_res == 0) {
             log_debug("poll timed out");
             continue;
@@ -171,7 +187,7 @@ bool run_tee(const char* tty, const char* _ptys[], size_t _ptys_count, bool over
                 }
                 writein_count += writein_more;
             }
-            if(has_bitmask(poll_fds[i].revents, POLLHUP)) {
+            if(has_bitmask(poll_fds[i].revents, POLLERR)) {
                 log_info("pty %s was closed, reopening...", ptys[i-1]);
                 if (!create_pty(ptys[i-1], &poll_fds[i].fd, true)) {
                     log_fatal("Could not recreate pty %s!", ptys[i-1]);

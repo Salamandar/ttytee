@@ -10,21 +10,8 @@
 
 #include <log.h>
 
+#include "timespec_utils.h"
 #include "tee.c"
-
-
-bool timespec_bigger(const struct timespec *a, const struct timespec *b) {
-    if (a->tv_sec > b->tv_sec) {
-        return true;
-    }
-    if (a->tv_sec < b->tv_sec) {
-        return false;
-    }
-    if (a->tv_nsec > b->tv_nsec) {
-        return true;
-    }
-    return false;
-}
 
 int main(int argc, const char **argv) {
     if (argc != 2) {
@@ -73,7 +60,7 @@ int main(int argc, const char **argv) {
         }
 
         clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-        if (timespec_bigger(&now, &next_send_time)) {
+        if (timespec_compare(&now, &next_send_time)) {
             next_send_time = now;
             next_send_time.tv_sec++;
             write(poll_pty.fd, "pouet\n", 7);
