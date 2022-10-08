@@ -1,12 +1,14 @@
 project('ttytee',
-    'c',
-    version: '0.1',
+    ['c', 'rust'],
+    version: '0.2',
     meson_version: '>=0.52.0',
     default_options: [
         'c_std=gnu11',
         'warning_level=3'
     ]
 )
+
+cargo = find_program('cargo', required: true)
 
 add_project_arguments([
     '-D_XOPEN_SOURCE=700',
